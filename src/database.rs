@@ -13,7 +13,7 @@ impl Database {
             .max_connections(config.max_pool_size)
             .connect(config.database_url.as_str())
             .await
-            .map_err(|e| Error::GenericError {
+            .map_err(|e| Error::Generic {
                 message: e.to_string(),
             })?;
 

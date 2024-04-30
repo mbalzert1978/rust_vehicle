@@ -9,7 +9,7 @@ mod environment;
 mod multi_purpose_url;
 
 pub fn get_config() -> Result<Config> {
-    Config::init_from_env().map_err(|e| Error::GenericError {
+    Config::init_from_env().map_err(|e| Error::Generic {
         message: e.to_string(),
     })
 }

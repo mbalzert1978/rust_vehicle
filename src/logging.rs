@@ -9,7 +9,7 @@ pub fn init_tracing(file: File) -> Result<()> {
         .with_writer(Arc::new(file));
     let subscriber = Registry::default().with(stdout_log).with(json_layer);
 
-    tracing::subscriber::set_global_default(subscriber).map_err(|e| Error::GenericError {
+    tracing::subscriber::set_global_default(subscriber).map_err(|e| Error::Generic {
         message: e.to_string(),
     })?;
 

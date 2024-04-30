@@ -4,7 +4,7 @@ pub fn create_directory(path: &str) -> Result<&std::path::Path> {
     let directory = std::path::Path::new(path);
 
     if !directory.exists() {
-        std::fs::create_dir_all(directory).map_err(|e| Error::IOError {
+        std::fs::create_dir_all(directory).map_err(|e| Error::IO {
             message: e.to_string(),
         })?;
     }
@@ -18,7 +18,7 @@ pub fn create_or_open_file(file_name: &str, directory: &std::path::Path) -> Resu
         .append(true)
         .create(true)
         .open(directory.join(path))
-        .map_err(|e| Error::IOError {
+        .map_err(|e| Error::IO {
             message: e.to_string(),
         })?;
     Ok(file)
@@ -51,7 +51,7 @@ mod tests {
 
         assert_eq!(
             result.unwrap_err(),
-            Error::IOError {
+            Error::IO {
                 message: "Permission denied (os error 13)".to_string()
             }
         );
@@ -101,7 +101,7 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            Error::IOError {
+            Error::IO {
                 message: "No such file or directory (os error 2)".to_string()
             }
         );

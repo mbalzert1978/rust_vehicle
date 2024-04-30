@@ -9,13 +9,13 @@ use serde::Serialize;
 #[serde(tag = "type", content = "data")]
 pub enum Error {
     // Setup
-    GenericError { message: String },
+    Generic { message: String },
 
     // IO
-    IOError { message: String },
+    IO { message: String },
 
     // Runtime
-    RunTimeError { message: String },
+    RunTime { message: String },
 
     // HTTP Errors
     NotAllowed,
