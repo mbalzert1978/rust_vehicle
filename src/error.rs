@@ -36,7 +36,7 @@ impl IntoResponse for Error {
         let status = match self {
             Error::NotAllowed => StatusCode::METHOD_NOT_ALLOWED,
             Error::NotFound => StatusCode::NOT_FOUND,
-            Error::BadRequest {.. } => StatusCode::BAD_REQUEST,
+            Error::BadRequest { .. } => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
 

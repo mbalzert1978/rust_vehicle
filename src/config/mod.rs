@@ -5,7 +5,6 @@ use environment::Environments;
 use multi_purpose_url::PostgresDsn;
 use validator::Validate;
 
-
 mod environment;
 mod multi_purpose_url;
 

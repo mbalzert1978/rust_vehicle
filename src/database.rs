@@ -12,7 +12,10 @@ impl Database {
         let pool = PgPoolOptions::new()
             .max_connections(config.max_pool_size)
             .connect(config.database_url.as_str())
-            .await.map_err(|e| Error::GenericError { message: e.to_string() })?;
+            .await
+            .map_err(|e| Error::GenericError {
+                message: e.to_string(),
+            })?;
 
         Ok(Database(Arc::new(pool)))
     }

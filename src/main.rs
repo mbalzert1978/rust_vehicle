@@ -2,12 +2,12 @@ use crate::{config::get_config, logging::init_tracing, prelude::*};
 
 mod config;
 mod constants;
+mod database;
 mod error;
+mod health;
 mod io;
 mod logging;
 mod prelude;
-mod health;
-mod database;
 
 #[tokio::main]
 async fn main() -> Result<()> {

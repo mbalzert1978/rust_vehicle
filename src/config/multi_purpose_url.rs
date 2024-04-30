@@ -65,5 +65,4 @@ mod tests {
         assert_eq!(dsn.port(), Some(5432));
         assert_eq!(dsn.password(), Some("pass"));
     }
-    
 }
