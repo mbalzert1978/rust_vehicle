@@ -27,9 +27,7 @@ impl FromStr for PostgresDsn {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
-        let url = Url::parse(s).map_err(|e| Error::Generic {
-            message: e.to_string(),
-        })?;
+        let url = Url::parse(s).map_err(Error::generic)?;
         if !["postgres", "postgresql"].contains(&url.scheme()) {
             return Err(Error::generic(format!(
                 "invalid scheme dsn: [{}]",
