@@ -35,5 +35,12 @@ Cargo.lock
 # Ignore all local history of files
 .history
 .ionide
+.env
+
+### Logs
+logs/
+
+### requests
+requests/
 
 # End of https://www.toptal.com/developers/gitignore/api/rust,visualstudiocode
