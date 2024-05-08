@@ -1,55 +1,55 @@
-use crate::{config::get_config, logging::init_tracing, prelude::*};
+use axum::middleware::from_fn;
+use tower_http::timeout::TimeoutLayer;
+use tower_http::trace::TraceLayer;
+
+use crate::prelude::*;
 
 mod config;
 mod constants;
+mod ctx;
 mod database;
 mod error;
+mod fallback;
 mod health;
 mod io;
 mod logging;
+mod middleware;
 mod prelude;
+mod utils;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let config = get_config()?;
+    let config = config::get_config()?;
 
     let directory = io::create_directory(&config.directory)?;
-    let file = io::create_or_open_file(&config.file_name, &directory)?;
+    let file = io::create_or_open_file(&config.file_name, directory)?;
 
-    init_tracing(file)?;
+    logging::init_tracing(file)?;
     tracing::info!("{}", constants::STARTING);
 
-    let shared_config = std::sync::Arc::new(config.clone());
-    todo!();
+    let ctx = ctx::get_ctx(config.clone()).await?;
 
-    // let urls = urls::read::routes();
+    let health = health::router::health();
 
-    // let routes = Router::new().nest("/urls", urls);
+    let routes = axum::Router::new().nest("/health", health);
 
-    // let app = Router::new()
-    //     .nest(constants::PREFIX, routes)
-    //     .fallback(fallback::fallback)
-    //     .layer(Extension(shared_config))
-    //     .layer(TraceLayer::new_for_http())
-    //     .layer(from_fn(middleware::handle_method_not_allowed));
+    let app = axum::Router::new()
+        .nest(constants::PREFIX, routes)
+        .fallback(fallback::fallback)
+        .layer(ctx)
+        .layer(TimeoutLayer::new(std::time::Duration::from_secs(5)))
+        .layer(TraceLayer::new_for_http())
+        .layer(from_fn(middleware::inject_cid));
 
-    // let listener = TcpListener::bind(format!("{}:{}", &config.host, &config.port))
-    //     .await
-    //     .map_err(|_| Error::BindError {
-    //         message: constants::ERR_TCP_LISTENER.to_string(),
-    //     })?;
+    let listener = tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port))
+        .await
+        .map_err(Error::generic)?;
 
-    // tracing::info!(
-    //     "listening on {}",
-    //     listener.local_addr().map_err(|e| Error::LoggingError {
-    //         message: e.to_string()
-    //     })?
-    // );
+    tracing::info!(
+        "listening on {}",
+        listener.local_addr().map_err(Error::generic)?
+    );
 
-    // axum::serve(listener, app)
-    //     .await
-    //     .map_err(|_| Error::ServeError {
-    //         message: constants::ERR_SERVER_CREATE_FAILED.to_string(),
-    //     })?;
-    // Ok(())
+    axum::serve(listener, app).await.map_err(Error::generic)?;
+    Ok(())
 }
