@@ -44,8 +44,8 @@ impl FromStr for PostgresDsn {
 mod tests {
     use super::*;
 
-    #[test]
-    fn from_str_for_postgres_dsn_when_wrong_schema_should_return_error() {
+    #[tokio::test]
+    async fn from_str_for_postgres_dsn_when_wrong_schema_should_return_error() {
         let dsn = PostgresDsn::from_str("http://user:pass@localhost:5432/foobar");
         assert_eq!(
             dsn,
@@ -53,8 +53,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn from_str_for_postgres_dsn_when_correct_schema_should_return_dsn() {
+    #[tokio::test]
+    async fn from_str_for_postgres_dsn_when_correct_schema_should_return_dsn() {
         let dsn = PostgresDsn::from_str("postgres://user:pass@localhost:5432/foobar")
             .expect("Should not fail here.");
 
