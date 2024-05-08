@@ -47,9 +47,7 @@ mod tests {
 
         assert_eq!(
             result.unwrap_err(),
-            Error::IO {
-                message: "Permission denied (os error 13)".to_string()
-            }
+            Error::io("Permission denied (os error 13)")
         );
     }
 
@@ -97,9 +95,7 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            Error::IO {
-                message: "No such file or directory (os error 2)".to_string()
-            }
+            Error::io("No such file or directory (os error 2)")
         );
     }
 }
