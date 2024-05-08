@@ -9,9 +9,8 @@ mod environment;
 mod multi_purpose_url;
 
 pub fn get_config() -> Result<Config> {
-    Config::init_from_env().map_err(|e| Error::Generic {
-        message: e.to_string(),
-    })
+    dotenvy::dotenv().ok();
+    Config::init_from_env().map_err(Error::generic)
 }
 
 #[derive(Envconfig, Clone, Validate)]
@@ -40,4 +39,11 @@ pub struct Config {
     #[envconfig(from = "MAX_POOL_SIZE", default = "8")]
     #[validate(range(min = 1, max = 10))]
     pub max_pool_size: u32,
+
+    #[envconfig(from = "HOST", default = "0.0.0.0")]
+    pub host: String,
+
+    #[envconfig(from = "port", default = "8000")]
+    #[validate(range(min = 1, max = 65535))]
+    pub port: u16,
 }
