@@ -55,6 +55,11 @@ impl Error {
             message: error.to_string(),
         }
     }
+    pub fn runtime<E: ToString>(error: E) -> Self {
+        Error::RunTime {
+            message: error.to_string(),
+        }
+    }
 }
 
 impl std::error::Error for Error {}
