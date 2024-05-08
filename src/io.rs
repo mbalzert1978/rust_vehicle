@@ -4,9 +4,7 @@ pub fn create_directory(path: &str) -> Result<&std::path::Path> {
     let directory = std::path::Path::new(path);
 
     if !directory.exists() {
-        std::fs::create_dir_all(directory).map_err(|e| Error::IO {
-            message: e.to_string(),
-        })?;
+        std::fs::create_dir_all(directory).map_err(Error::io)?;
     }
 
     Ok(directory)
@@ -18,9 +16,7 @@ pub fn create_or_open_file(file_name: &str, directory: &std::path::Path) -> Resu
         .append(true)
         .create(true)
         .open(directory.join(path))
-        .map_err(|e| Error::IO {
-            message: e.to_string(),
-        })?;
+        .map_err(Error::io)?;
     Ok(file)
 }
 
@@ -38,7 +34,7 @@ mod tests {
             .expect("Cant create temp dir.");
         let path = temp_dir.path().join("test_sub_dir");
 
-        let result = create_directory(&path.to_str().unwrap());
+        let result = create_directory(path.to_str().unwrap());
 
         assert_eq!(path, result.unwrap());
     }
