@@ -42,14 +42,14 @@ impl FromStr for Environments {
 mod tests {
     use super::*;
 
-    #[test]
-    fn from_str_for_environments_when_wrong_string_should_return_production() {
+    #[tokio::test]
+    async fn from_str_for_environments_when_wrong_string_should_return_production() {
         let env = Environments::from_str("foobar");
         assert_eq!(env, Ok(Environments::PRODUCTION));
     }
 
-    #[test]
-    fn from_str_for_environments_when_correct_string_should_return_environment() {
+    #[tokio::test]
+    async fn from_str_for_environments_when_correct_string_should_return_environment() {
         let env = Environments::from_str("LOCAL");
         assert_eq!(env, Ok(Environments::LOCAL));
 
@@ -63,8 +63,8 @@ mod tests {
         assert_eq!(env, Ok(Environments::PRODUCTION));
     }
 
-    #[test]
-    fn is_debug_when_called_on_local_staging_or_testing_should_return_true() {
+    #[tokio::test]
+    async fn is_debug_when_called_on_local_staging_or_testing_should_return_true() {
         let env = Environments::from_str("TESTING").unwrap();
         assert!(env.is_debug());
 
@@ -75,14 +75,14 @@ mod tests {
         assert!(env.is_debug());
     }
 
-    #[test]
-    fn is_debug_when_called_on_production_should_return_false() {
+    #[tokio::test]
+    async fn is_debug_when_called_on_production_should_return_false() {
         let env = Environments::from_str("PRODUCTION").unwrap();
         assert!(!env.is_debug());
     }
 
-    #[test]
-    fn is_deployed_when_called_on_staging_or_production_should_return_true() {
+    #[tokio::test]
+    async fn is_deployed_when_called_on_staging_or_production_should_return_true() {
         let env = Environments::from_str("STAGING").unwrap();
         assert!(env.is_deployed());
 
@@ -90,8 +90,8 @@ mod tests {
         assert!(env.is_deployed());
     }
 
-    #[test]
-    fn is_deployed_when_called_on_local_or_testing_should_return_false() {
+    #[tokio::test]
+    async fn is_deployed_when_called_on_local_or_testing_should_return_false() {
         let env = Environments::from_str("LOCAL").unwrap();
         assert!(!env.is_deployed());
 
@@ -99,14 +99,14 @@ mod tests {
         assert!(!env.is_deployed());
     }
 
-    #[test]
-    fn is_testing_when_called_on_testing_should_return_true() {
+    #[tokio::test]
+    async fn is_testing_when_called_on_testing_should_return_true() {
         let env = Environments::from_str("TESTING").unwrap();
         assert!(env.is_testing());
     }
 
-    #[test]
-    fn is_testing_when_called_on_local_staging_or_production_should_return_false() {
+    #[tokio::test]
+    async fn is_testing_when_called_on_local_staging_or_production_should_return_false() {
         let env = Environments::from_str("LOCAL").unwrap();
         assert!(!env.is_testing());
 
