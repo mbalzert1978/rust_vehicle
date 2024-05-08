@@ -9,18 +9,18 @@ use serde::Serialize;
 #[serde(tag = "type", content = "data")]
 pub enum Error {
     // Setup
-    Generic { message: String },
+    Generic { detail: String },
 
     // IO
-    IO { message: String },
+    IO { detail: String },
 
     // Runtime
-    RunTime { message: String },
+    RunTime { detail: String },
 
     // HTTP Errors
-    NotAllowed { message: String },
-    NotFound { message: String },
-    BadRequest { message: String },
+    NotAllowed { detail: String },
+    NotFound { detail: String },
+    BadRequest { detail: String },
 }
 
 impl core::fmt::Display for Error {
@@ -32,32 +32,32 @@ impl core::fmt::Display for Error {
 impl Error {
     pub fn not_found<E: ToString>(error: E) -> Self {
         Error::NotFound {
-            message: error.to_string(),
+            detail: error.to_string(),
         }
     }
     pub fn bad_request<E: ToString>(error: E) -> Self {
         Error::BadRequest {
-            message: error.to_string(),
+            detail: error.to_string(),
         }
     }
     pub fn not_allowed<E: ToString>(error: E) -> Self {
         Error::NotAllowed {
-            message: error.to_string(),
+            detail: error.to_string(),
         }
     }
     pub fn generic<E: ToString>(error: E) -> Self {
         Error::Generic {
-            message: error.to_string(),
+            detail: error.to_string(),
         }
     }
     pub fn io<E: ToString>(error: E) -> Self {
         Error::IO {
-            message: error.to_string(),
+            detail: error.to_string(),
         }
     }
     pub fn runtime<E: ToString>(error: E) -> Self {
         Error::RunTime {
-            message: error.to_string(),
+            detail: error.to_string(),
         }
     }
 }
