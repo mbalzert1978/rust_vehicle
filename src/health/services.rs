@@ -1,7 +1,7 @@
 use super::*;
 use crate::prelude::*;
 
-pub async fn get_database_status(
+pub(crate) async fn get_database_status(
     pool: &sqlx::Pool<sqlx::Postgres>,
 ) -> Result<sqlx::postgres::PgQueryResult> {
     sqlx::query(constants::QUERY)

@@ -3,18 +3,18 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 #[serde(tag = "type")]
-pub struct DatabaseStatus {
+pub(crate) struct DatabaseStatus {
     status: String,
 }
 
 impl DatabaseStatus {
-    pub fn ok() -> Self {
+    pub(crate) fn ok() -> Self {
         Self {
             status: String::from("OK"),
         }
     }
 
-    pub fn error() -> Self {
+    pub(crate) fn error() -> Self {
         Self {
             status: String::from("ERROR"),
         }
