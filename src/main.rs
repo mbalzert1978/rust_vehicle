@@ -33,7 +33,7 @@ async fn main() -> Result<()> {
     let routes = axum::Router::new().nest(health::Tag::get(), health);
 
     let app = axum::Router::new()
-        .nest(constants::PREFIX, routes)
+        .nest(constants::Prefix::get(), routes)
         .fallback(fallback::fallback)
         .layer(ctx)
         .layer(TimeoutLayer::new(std::time::Duration::from_secs(5)))
