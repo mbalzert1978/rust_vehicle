@@ -1,6 +1,5 @@
+use super::*;
 use std::collections::HashMap;
-
-use serde_json::Value;
 
 #[derive(serde::Deserialize)]
 pub(crate) struct CreateVehicle {
@@ -9,7 +8,7 @@ pub(crate) struct CreateVehicle {
     manufacturer: String,
     manufacturing_year: u32,
     is_driveable: bool,
-    body: HashMap<String, Value>,
+    body: HashMap<String, serde_json::Value>,
 }
 #[derive(serde::Deserialize)]
 pub(crate) struct UpdateVehicle {
@@ -17,7 +16,7 @@ pub(crate) struct UpdateVehicle {
     manufacturer: String,
     manufacturing_year: Option<u32>,
     is_driveable: Option<bool>,
-    body: HashMap<String, Value>,
+    body: HashMap<String, serde_json::Value>,
 }
 
 #[derive(serde::Serialize, Clone)]
@@ -27,7 +26,7 @@ pub(crate) struct Vehicle {
     manufacturer: String,
     manufacturing_year: u32,
     is_driveable: bool,
-    body: HashMap<String, Value>,
+    body: HashMap<String, serde_json::Value>,
     created_at: String,
     updated_at: String,
 }
@@ -65,16 +64,12 @@ pub(crate) struct DataMany(Vec<Vehicle>);
 
 impl axum::response::IntoResponse for DataOne {
     fn into_response(self) -> axum::response::Response {
-        let body = serde_json::to_string(&self).unwrap_or_default();
-        let status = axum::http::StatusCode::OK;
-        (status, body).into_response()
+        utils::serializer(&self, axum::http::StatusCode::OK).into_response()
     }
 }
 
 impl axum::response::IntoResponse for DataMany {
     fn into_response(self) -> axum::response::Response {
-        let body = serde_json::to_string(&self).unwrap_or_default();
-        let status = axum::http::StatusCode::OK;
-        (status, body).into_response()
+        utils::serializer(&self, axum::http::StatusCode::OK).into_response()
     }
 }
