@@ -7,11 +7,8 @@ pub fn routes() -> Router {
 }
 
 async fn health_api(Extension(ctx): Extension<ApiContext>) -> schemas::DatabaseStatus {
-    let pool = ctx.db.as_ref();
-    let result = services::get_database_status(pool).await.ok();
-
-    match result {
-        Some(_) => schemas::DatabaseStatus::ok(),
-        None => schemas::DatabaseStatus::error(),
-    }
+    services::get_database_status(ctx.db.as_ref())
+        .await
+        .ok()
+        .into()
 }
