@@ -1,20 +1,17 @@
+use super::*;
 use crate::ctx::ApiContext;
 use axum::{routing::get, Extension, Router};
 
-use super::schemas::DatabaseStatus;
-
-pub fn health() -> Router {
+pub fn routes() -> Router {
     Router::new().route("/", get(health_api))
 }
 
-async fn health_api(Extension(ctx): Extension<ApiContext>) -> DatabaseStatus {
-    let result = sqlx::query(r#"SELECT 1=1;"#)
-        .execute(ctx.db.as_ref())
-        .await
-        .ok();
+async fn health_api(Extension(ctx): Extension<ApiContext>) -> schemas::DatabaseStatus {
+    let executor = ctx.db.as_ref();
+    let result = services::get_database_status(executor).await.ok();
 
     match result {
-        Some(_) => DatabaseStatus::ok(),
-        None => DatabaseStatus::error(),
+        Some(_) => schemas::DatabaseStatus::ok(),
+        None => schemas::DatabaseStatus::error(),
     }
 }
