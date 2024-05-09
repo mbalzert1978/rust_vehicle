@@ -1,1 +1,1 @@
-pub const QUERY: &str = "SELECT 1=1;";
+pub(crate) const QUERY: &str = "SELECT 1=1;";
