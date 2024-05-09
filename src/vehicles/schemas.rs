@@ -1,34 +1,30 @@
 use super::*;
-use std::collections::HashMap;
 
 #[derive(serde::Deserialize)]
 pub(crate) struct CreateVehicle {
-    id: uuid::Uuid,
-    name: String,
-    manufacturer: String,
-    manufacturing_year: u32,
-    is_driveable: bool,
-    body: HashMap<String, serde_json::Value>,
+    pub(crate) name: String,
+    pub(crate) manufacturer: Option<String>,
+    pub(crate) manufacturing_year: Option<i32>,
+    pub(crate) is_driveable: bool,
+    pub(crate) body: serde_json::Value,
 }
 #[derive(serde::Deserialize)]
 pub(crate) struct UpdateVehicle {
-    name: Option<String>,
-    manufacturer: String,
-    manufacturing_year: Option<u32>,
-    is_driveable: Option<bool>,
-    body: HashMap<String, serde_json::Value>,
+    pub(crate) name: Option<String>,
+    pub(crate) manufacturer: Option<String>,
+    pub(crate) manufacturing_year: Option<i32>,
+    pub(crate) is_driveable: Option<bool>,
+    pub(crate) body: Option<serde_json::Value>,
 }
 
 #[derive(serde::Serialize, Clone)]
 pub(crate) struct Vehicle {
-    id: uuid::Uuid,
-    name: String,
-    manufacturer: String,
-    manufacturing_year: u32,
-    is_driveable: bool,
-    body: HashMap<String, serde_json::Value>,
-    created_at: String,
-    updated_at: String,
+    pub(crate) id: uuid::Uuid,
+    pub(crate) name: String,
+    pub(crate) manufacturer: Option<String>,
+    pub(crate) manufacturing_year: Option<i32>,
+    pub(crate) is_driveable: bool,
+    pub(crate) body: serde_json::Value,
 }
 
 impl From<Option<Vehicle>> for DataOne {
@@ -40,13 +36,6 @@ impl From<Option<Vehicle>> for DataOne {
 impl From<Vehicle> for DataOne {
     fn from(value: Vehicle) -> Self {
         DataOne(Some(value))
-    }
-}
-
-impl From<Vec<Option<Vehicle>>> for DataMany {
-    fn from(value: Vec<Option<Vehicle>>) -> Self {
-        let vehicle = value.iter().flatten().cloned().collect::<Vec<_>>();
-        DataMany(vehicle)
     }
 }
 
