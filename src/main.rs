@@ -15,6 +15,7 @@ mod logging;
 mod middleware;
 mod prelude;
 mod utils;
+mod vehicles;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -29,8 +30,11 @@ async fn main() -> Result<()> {
     let ctx = ctx::get_ctx(config.clone()).await?;
 
     let health = health::router::routes();
+    let vehicles = vehicles::router::routes();
 
-    let routes = axum::Router::new().nest(health::Tag::get(), health);
+    let routes = axum::Router::new()
+        .nest(health::Tag::get(), health)
+        .nest(vehicles::Tag::get(), vehicles);
 
     let app = axum::Router::new()
         .nest(constants::Prefix::get(), routes)
