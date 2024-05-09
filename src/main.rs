@@ -7,7 +7,6 @@ use crate::prelude::*;
 mod config;
 mod constants;
 mod ctx;
-mod database;
 mod error;
 mod fallback;
 mod health;
@@ -29,9 +28,9 @@ async fn main() -> Result<()> {
 
     let ctx = ctx::get_ctx(config.clone()).await?;
 
-    let health = health::router::health();
+    let health = health::router::routes();
 
-    let routes = axum::Router::new().nest("/health", health);
+    let routes = axum::Router::new().nest(health::Tag::get(), health);
 
     let app = axum::Router::new()
         .nest(constants::PREFIX, routes)
