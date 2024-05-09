@@ -14,7 +14,7 @@ pub(crate) struct CreateVehicle {
 #[derive(serde::Deserialize)]
 pub(crate) struct UpdateVehicle {
     name: Option<String>,
-    manufacturer: Option<String>,
+    manufacturer: String,
     manufacturing_year: Option<u32>,
     is_driveable: Option<bool>,
     body: HashMap<String, Value>,
@@ -28,6 +28,8 @@ pub(crate) struct Vehicle {
     manufacturing_year: u32,
     is_driveable: bool,
     body: HashMap<String, Value>,
+    created_at: String,
+    updated_at: String,
 }
 
 impl From<Option<Vehicle>> for DataOne {
