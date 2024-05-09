@@ -1,3 +1,7 @@
+use std::collections::HashMap;
+
+use serde_json::Value;
+
 #[derive(serde::Deserialize)]
 pub(crate) struct CreateVehicle {
     id: uuid::Uuid,
@@ -5,6 +9,7 @@ pub(crate) struct CreateVehicle {
     manufacturer: String,
     manufacturing_year: u32,
     is_driveable: bool,
+    body: HashMap<String, Value>,
 }
 #[derive(serde::Deserialize)]
 pub(crate) struct UpdateVehicle {
@@ -12,6 +17,7 @@ pub(crate) struct UpdateVehicle {
     manufacturer: Option<String>,
     manufacturing_year: Option<u32>,
     is_driveable: Option<bool>,
+    body: HashMap<String, Value>,
 }
 
 #[derive(serde::Serialize, Clone)]
@@ -21,6 +27,7 @@ pub(crate) struct Vehicle {
     manufacturer: String,
     manufacturing_year: u32,
     is_driveable: bool,
+    body: HashMap<String, Value>,
 }
 
 impl From<Option<Vehicle>> for DataOne {
