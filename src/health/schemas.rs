@@ -1,5 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse};
 use serde::Serialize;
+use sqlx::postgres::PgQueryResult;
 
 #[derive(Serialize)]
 #[serde(tag = "type")]
@@ -17,6 +18,15 @@ impl DatabaseStatus {
     pub(crate) fn error() -> Self {
         Self {
             status: String::from("ERROR"),
+        }
+    }
+}
+
+impl From<Option<PgQueryResult>> for DatabaseStatus {
+    fn from(value: Option<PgQueryResult>) -> Self {
+        match value {
+            Some(_) => DatabaseStatus::ok(),
+            None => DatabaseStatus::error(),
         }
     }
 }
