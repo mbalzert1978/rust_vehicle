@@ -1,5 +1,5 @@
 #[derive(serde::Deserialize)]
-pub struct CreateVehicle {
+pub(crate) struct CreateVehicle {
     id: uuid::Uuid,
     name: String,
     manufacturer: String,
@@ -7,15 +7,15 @@ pub struct CreateVehicle {
     is_driveable: bool,
 }
 #[derive(serde::Deserialize)]
-pub struct UpdateVehicle {
+pub(crate) struct UpdateVehicle {
     name: Option<String>,
     manufacturer: Option<String>,
     manufacturing_year: Option<u32>,
     is_driveable: Option<bool>,
 }
 
-#[derive(serde::Serialize)]
-pub struct Vehicle {
+#[derive(serde::Serialize, Clone)]
+pub(crate) struct Vehicle {
     id: uuid::Uuid,
     name: String,
     manufacturer: String,
@@ -23,11 +23,36 @@ pub struct Vehicle {
     is_driveable: bool,
 }
 
-#[derive(serde::Serialize)]
-pub struct DataOne(Vehicle);
+impl From<Option<Vehicle>> for DataOne {
+    fn from(value: Option<Vehicle>) -> Self {
+        DataOne(value)
+    }
+}
+
+impl From<Vehicle> for DataOne {
+    fn from(value: Vehicle) -> Self {
+        DataOne(Some(value))
+    }
+}
+
+impl From<Vec<Option<Vehicle>>> for DataMany {
+    fn from(value: Vec<Option<Vehicle>>) -> Self {
+        let vehicle = value.iter().flatten().cloned().collect::<Vec<_>>();
+        DataMany(vehicle)
+    }
+}
+
+impl From<Vec<Vehicle>> for DataMany {
+    fn from(value: Vec<Vehicle>) -> Self {
+        DataMany(value)
+    }
+}
 
 #[derive(serde::Serialize)]
-pub struct DataMany(Vec<Vehicle>);
+pub(crate) struct DataOne(Option<Vehicle>);
+
+#[derive(serde::Serialize)]
+pub(crate) struct DataMany(Vec<Vehicle>);
 
 impl axum::response::IntoResponse for DataOne {
     fn into_response(self) -> axum::response::Response {
