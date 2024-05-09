@@ -13,6 +13,7 @@ impl DatabaseStatus {
             status: String::from("OK"),
         }
     }
+
     pub fn error() -> Self {
         Self {
             status: String::from("ERROR"),
