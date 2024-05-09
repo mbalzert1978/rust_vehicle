@@ -1,6 +1,7 @@
-use crate::ctx::ApiContext;
-
 use super::*;
+use crate::ctx::ApiContext;
+use crate::prelude::*;
+
 use axum::{
     extract::Path,
     routing::{delete, get, post, put},
@@ -14,31 +15,43 @@ pub fn routes() -> axum::Router {
         .route("/{id}", delete(delete_by_id))
 }
 
-async fn insert(axum::Extension(ctx): axum::Extension<ApiContext>) -> schemas::DataOne {
-    todo!()
+async fn insert(
+    axum::Extension(ctx): axum::Extension<ApiContext>,
+    axum::Json(payload): axum::Json<schemas::CreateVehicle>,
+) -> Result<schemas::DataOne> {
+    services::insert(ctx, payload)
+        .await
+        .map(Into::<schemas::DataOne>::into)
 }
 
 async fn get_by_id(
     axum::Extension(ctx): axum::Extension<ApiContext>,
     Path(id): Path<uuid::Uuid>,
-) -> schemas::DataOne {
-    todo!()
+) -> Result<schemas::DataOne> {
+    services::get_by_id(ctx, id)
+        .await
+        .map(Into::<schemas::DataOne>::into)
 }
 
-async fn get_all(axum::Extension(ctx): axum::Extension<ApiContext>) -> schemas::DataMany {
-    todo!()
+async fn get_all(axum::Extension(ctx): axum::Extension<ApiContext>) -> Result<schemas::DataMany> {
+    services::get_all(ctx)
+        .await
+        .map(Into::<schemas::DataMany>::into)
 }
 
 async fn update(
     axum::Extension(ctx): axum::Extension<ApiContext>,
     Path(id): Path<uuid::Uuid>,
-) -> schemas::DataOne {
-    todo!()
+    axum::Json(payload): axum::Json<schemas::UpdateVehicle>,
+) -> Result<schemas::DataOne> {
+    services::update(ctx, id, payload)
+        .await
+        .map(Into::<schemas::DataOne>::into)
 }
 
 async fn delete_by_id(
     axum::Extension(ctx): axum::Extension<ApiContext>,
     Path(id): Path<uuid::Uuid>,
-) {
-    todo!()
+) -> Result<()> {
+    services::delete_by_id(ctx, id).await
 }
