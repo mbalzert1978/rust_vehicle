@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-pub async fn fallback(
+pub(crate) async fn fallback(
     headers: axum::http::HeaderMap,
     axum::Extension(cid): axum::Extension<uuid::Uuid>,
 ) -> impl axum::response::IntoResponse {
