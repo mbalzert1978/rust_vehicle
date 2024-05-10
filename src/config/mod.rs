@@ -1,16 +1,14 @@
 use crate::prelude::*;
 
 use envconfig::Envconfig;
-use environment::Environments;
 use multi_purpose_url::PostgresDsn;
 use validator::Validate;
 
-mod environment;
 mod multi_purpose_url;
 
 pub fn get_config() -> Result<Config> {
     dotenvy::dotenv().ok();
-    Config::init_from_env().map_err(Error::generic)
+    Ok(Config::init_from_env()?)
 }
 
 #[derive(Envconfig, Clone, Validate)]
@@ -26,9 +24,6 @@ pub struct Config {
 
     #[envconfig(from = "VERSION", default = "0.0.1")]
     pub version: String,
-
-    #[envconfig(from = "ENVIRONMENT", default = "PRODUCTION")]
-    pub environment: Environments,
 
     #[envconfig(from = "DIRECTORY", default = "./logs")]
     pub directory: String,
