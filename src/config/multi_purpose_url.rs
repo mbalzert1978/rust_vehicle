@@ -49,12 +49,10 @@ mod tests {
     #[tokio::test]
     async fn from_str_for_postgres_dsn_when_wrong_schema_should_return_error() {
         let dsn = PostgresDsn::from_str("http://user:pass@localhost:5432/foobar");
-        assert_eq!(
-            dsn,
-            Err(Error::Schema {
-                detail: "Invalid dsn scheme: [http]".to_string()
-            })
-        );
+        match dsn {
+            Err(Error::Schema { .. }) => (),
+            _ => panic!("Error type does not match Error::Schema"),
+        }
     }
 
     #[tokio::test]

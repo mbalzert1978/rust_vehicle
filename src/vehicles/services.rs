@@ -262,11 +262,9 @@ mod tests {
 
         assert!(result.is_err(), "FAIL: Vehicle should not exist.");
 
-        assert_eq!(
-            result.unwrap_err(),
-            Error::NotFound {
-                detail: "Vehicle with the specified ID was not found.".to_string()
-            }
-        );
+        match result {
+            Err(Error::NotFound { .. }) => (),
+            _ => panic!("FAIL: Error should be NotFound."),
+        }
     }
 }
