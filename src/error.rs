@@ -29,6 +29,15 @@ impl core::fmt::Display for Error {
     }
 }
 
+impl From<sqlx::Error> for Error {
+    fn from(value: sqlx::Error) -> Self {
+        match value {
+            sqlx::Error::RowNotFound => Error::not_found(value),
+            _ => Error::generic(value),
+        }
+    }
+}
+
 impl Error {
     pub fn not_found<E: ToString>(error: E) -> Self {
         Error::NotFound {
