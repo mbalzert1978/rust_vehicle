@@ -33,9 +33,7 @@ async fn get_by_id(
         .map(Into::<schemas::DataOne>::into)
 }
 
-async fn get_all(
-    axum::Extension(ctx): axum::Extension<ApiContext>,
-) -> Result<schemas::DataMany> {
+async fn get_all(axum::Extension(ctx): axum::Extension<ApiContext>) -> Result<schemas::DataMany> {
     services::get_all(ctx.db.as_ref())
         .await
         .map(Into::<schemas::DataMany>::into)
