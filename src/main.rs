@@ -5,7 +5,7 @@ use crate::prelude::*;
 
 mod config;
 mod constants;
-mod ctx;
+mod db;
 mod error;
 mod fallback;
 mod health;
@@ -26,7 +26,7 @@ async fn main() -> Result<()> {
     logging::init_tracing(file)?;
     tracing::info!("{}", constants::STARTING);
 
-    let ctx = ctx::get_ctx(config.clone()).await?;
+    let pool = db::get_pool(config.clone()).await?;
 
     let health = health::router::routes();
     let vehicles = vehicles::router::routes();
@@ -38,7 +38,7 @@ async fn main() -> Result<()> {
     let app = axum::Router::new()
         .nest(constants::Prefix::get(), routes)
         .fallback(fallback::fallback)
-        .layer(ctx)
+        .layer(pool)
         .layer(TimeoutLayer::new(std::time::Duration::from_secs(
             constants::TIMEOUT_SECONDS,
         )))
