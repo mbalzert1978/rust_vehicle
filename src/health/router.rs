@@ -6,11 +6,7 @@ pub fn routes() -> Router {
     Router::new().route("/", get(health_api))
 }
 
-async fn health_api(
-    Extension(ctx): Extension<ApiContext>,
-    Extension(cid): Extension<uuid::Uuid>,
-) -> schemas::DatabaseStatus {
-    tracing::info!(correlation_id = %cid.to_string(), "get_database_status");
+async fn health_api(Extension(ctx): Extension<ApiContext>) -> schemas::DatabaseStatus {
     services::get_database_status(ctx.db.as_ref())
         .await
         .ok()
