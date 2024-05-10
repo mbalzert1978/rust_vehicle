@@ -18,6 +18,7 @@ pub(crate) struct UpdateVehicle {
 }
 
 #[derive(serde::Serialize, Clone)]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub(crate) struct Vehicle {
     pub(crate) id: uuid::Uuid,
     pub(crate) name: String,
