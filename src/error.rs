@@ -45,7 +45,7 @@ impl From<validator::ValidationErrors> for Error {
     }
 }
 
-impl From<envconfig::Error> for Error  {
+impl From<envconfig::Error> for Error {
     fn from(value: envconfig::Error) -> Self {
         Error::Config {
             detail: value.to_string(),
