@@ -2,6 +2,8 @@ use axum::{http::StatusCode, response::IntoResponse};
 use serde::Serialize;
 use sqlx::postgres::PgQueryResult;
 
+use crate::utils::serializer;
+
 #[derive(Serialize)]
 #[serde(tag = "type")]
 pub(crate) struct DatabaseStatus {
@@ -33,8 +35,6 @@ impl From<Option<PgQueryResult>> for DatabaseStatus {
 
 impl IntoResponse for DatabaseStatus {
     fn into_response(self) -> axum::response::Response {
-        let body = serde_json::to_string(&self).unwrap_or_default();
-
-        (StatusCode::OK, body).into_response()
+        serializer(&self, StatusCode::OK).into_response()
     }
 }
