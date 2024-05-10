@@ -30,12 +30,12 @@ pub(crate) async fn insert(
             $6
         ) 
         RETURNING
-        id,
-        name,
-        manufacturer,
-        manufacturing_year,
-        is_driveable,
-        body;
+            id,
+            name,
+            manufacturer,
+            manufacturing_year,
+            is_driveable,
+            body;
         ",
         uuid::Uuid::now_v7(),
         payload.name,
@@ -163,7 +163,7 @@ mod tests {
                 "foo" : ["bar", "baz"]
             }),
         };
-        let result = insert(&pool, &to_create).await;
+        let result = insert(pool, &to_create).await;
 
         assert!(result.is_ok(), "FAIL: Could not insert vehicle.");
 
