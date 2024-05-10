@@ -21,7 +21,7 @@ async fn insert(
     axum::Json(payload): axum::Json<schemas::CreateVehicle>,
 ) -> Result<schemas::DataOne> {
     tracing::info!(correlation_id = %cid.to_string(), "insert_vehicle");
-    services::insert(ctx, payload)
+    services::insert(ctx.db.as_ref(), &payload)
         .await
         .map(Into::<schemas::DataOne>::into)
 }
@@ -32,7 +32,7 @@ async fn get_by_id(
     Path(id): Path<uuid::Uuid>,
 ) -> Result<schemas::DataOne> {
     tracing::info!(correlation_id = %cid.to_string(), "get_vehicle_by_id");
-    services::get_by_id(ctx, id)
+    services::get_by_id(ctx.db.as_ref(), id)
         .await
         .map(Into::<schemas::DataOne>::into)
 }
@@ -42,7 +42,7 @@ async fn get_all(
     axum::Extension(cid): axum::Extension<uuid::Uuid>,
 ) -> Result<schemas::DataMany> {
     tracing::info!(correlation_id = %cid.to_string(), "get_all_vehicles");
-    services::get_all(ctx)
+    services::get_all(ctx.db.as_ref())
         .await
         .map(Into::<schemas::DataMany>::into)
 }
@@ -54,7 +54,7 @@ async fn update(
     axum::Json(payload): axum::Json<schemas::UpdateVehicle>,
 ) -> Result<schemas::DataOne> {
     tracing::info!(correlation_id = %cid.to_string(), "update_vehicle");
-    services::update(ctx, id, payload)
+    services::update(ctx.db.as_ref(), id, &payload)
         .await
         .map(Into::<schemas::DataOne>::into)
 }
@@ -65,5 +65,5 @@ async fn delete_by_id(
     Path(id): Path<uuid::Uuid>,
 ) -> Result<()> {
     tracing::info!(correlation_id = %cid.to_string(), "delete_vehicle_by_id");
-    services::delete_by_id(ctx, id).await
+    services::delete_by_id(ctx.db.as_ref(), id).await
 }
