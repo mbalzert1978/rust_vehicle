@@ -1,4 +1,4 @@
-use super::*;
+use crate::utils::serializer;
 
 #[derive(serde::Deserialize)]
 pub(crate) struct CreateVehicle {
@@ -73,13 +73,13 @@ pub(crate) struct DataMany {
 
 impl axum::response::IntoResponse for DataOne {
     fn into_response(self) -> axum::response::Response {
-        utils::serializer(&self, axum::http::StatusCode::OK).into_response()
+        serializer(&self, axum::http::StatusCode::OK).into_response()
     }
 }
 
 impl axum::response::IntoResponse for DataMany {
     fn into_response(self) -> axum::response::Response {
-        utils::serializer(&self, axum::http::StatusCode::OK).into_response()
+        serializer(&self, axum::http::StatusCode::OK).into_response()
     }
 }
 

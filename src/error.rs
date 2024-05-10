@@ -1,11 +1,10 @@
+use crate::utils::serializer;
 use axum::{
     body::Body,
     http::{Response, StatusCode},
     response::IntoResponse,
-    Json,
 };
 use serde::Serialize;
-use serde_json::json;
 
 #[derive(Clone, Debug, Serialize)]
 #[cfg_attr(test, derive(PartialEq))]
@@ -108,9 +107,6 @@ impl IntoResponse for Error {
             Error::NotFound { .. } => StatusCode::NOT_FOUND,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
-
-        let body = Json(json!(self));
-
-        (status, body).into_response()
+        serializer(&self, status).into_response()
     }
 }
