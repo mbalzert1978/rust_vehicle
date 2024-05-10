@@ -1,7 +1,10 @@
+use axum::Json;
+use serde_json::json;
+
 pub(crate) fn serializer<T: Sized + serde::Serialize>(
     value: &T,
     status: axum::http::StatusCode,
-) -> (axum::http::StatusCode, String) {
-    let body = serde_json::to_string(&value).unwrap_or_default();
+) -> (axum::http::StatusCode, axum::Json<serde_json::Value>) {
+    let body = Json(json!(&value));
     (status, body)
 }
