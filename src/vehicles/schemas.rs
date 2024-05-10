@@ -18,6 +18,7 @@ pub(crate) struct UpdateVehicle {
 }
 
 #[derive(serde::Serialize, Clone)]
+#[serde(tag = "type")]
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub(crate) struct Vehicle {
     pub(crate) id: uuid::Uuid,
@@ -28,56 +29,45 @@ pub(crate) struct Vehicle {
     pub(crate) body: serde_json::Value,
 }
 
-impl From<Option<Vehicle>> for DataOne {
+impl From<Option<Vehicle>> for Product {
     fn from(value: Option<Vehicle>) -> Self {
-        DataOne {
-            result_type: "result".to_string(),
-            data: value,
-        }
+        Product { data: value }
     }
 }
 
-impl From<Vehicle> for DataOne {
+impl From<Vehicle> for Product {
     fn from(value: Vehicle) -> Self {
-        DataOne {
-            result_type: "result".to_string(),
-            data: Some(value),
-        }
+        Product { data: Some(value) }
     }
 }
 
-impl From<Vec<Vehicle>> for DataMany {
+impl From<Vec<Vehicle>> for Products {
     fn from(value: Vec<Vehicle>) -> Self {
-        DataMany {
-            result_type: "result".to_string(),
-            data: value,
-        }
+        Products { data: value }
     }
 }
 
 #[derive(serde::Serialize)]
+#[serde(tag = "type")]
 #[cfg_attr(test, derive(PartialEq, Debug))]
-pub(crate) struct DataOne {
-    #[serde(rename = "type")]
-    result_type: String,
+pub(crate) struct Product {
     data: Option<Vehicle>,
 }
 
 #[derive(serde::Serialize)]
+#[serde(tag = "type")]
 #[cfg_attr(test, derive(PartialEq, Debug))]
-pub(crate) struct DataMany {
-    #[serde(rename = "type")]
-    result_type: String,
+pub(crate) struct Products {
     data: Vec<Vehicle>,
 }
 
-impl axum::response::IntoResponse for DataOne {
+impl axum::response::IntoResponse for Product {
     fn into_response(self) -> axum::response::Response {
         serializer(&self, axum::http::StatusCode::OK).into_response()
     }
 }
 
-impl axum::response::IntoResponse for DataMany {
+impl axum::response::IntoResponse for Products {
     fn into_response(self) -> axum::response::Response {
         serializer(&self, axum::http::StatusCode::OK).into_response()
     }
@@ -120,11 +110,10 @@ mod tests {
     #[tokio::test]
     async fn when_calling_into_on_vehicle_instance_should_return_valid_data_one_instance() {
         let test_vehicle = get_test_vehicle();
-        let expected = DataOne {
-            result_type: "result".to_string(),
+        let expected = Product {
             data: Some(test_vehicle.clone()),
         };
-        let result: DataOne = test_vehicle.into();
+        let result: Product = test_vehicle.into();
         assert_eq!(result, expected);
     }
 
@@ -149,13 +138,13 @@ mod tests {
             },
         ];
 
-        let vehicles: DataMany = vehicles.into();
+        let vehicles: Products = vehicles.into();
         assert_eq!(vehicles.data.len(), 2);
     }
 
     #[tokio::test]
     async fn when_into_response_is_called_on_data_one_instance_should_return_valid_response() {
-        let data_one: DataOne = get_test_vehicle().into();
+        let data_one: Product = get_test_vehicle().into();
         let response = data_one.into_response();
         assert_eq!(response.status(), StatusCode::OK);
     }
@@ -181,7 +170,7 @@ mod tests {
             },
         ];
 
-        let data_many: DataMany = vehicles.into();
+        let data_many: Products = vehicles.into();
         let response = data_many.into_response();
         assert_eq!(response.status(), StatusCode::OK);
     }

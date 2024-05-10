@@ -19,35 +19,35 @@ pub(crate) fn routes() -> axum::Router {
 async fn insert(
     axum::Extension(pool): axum::Extension<Arc<PgPool>>,
     axum::Json(payload): axum::Json<schemas::CreateVehicle>,
-) -> Result<schemas::DataOne> {
+) -> Result<schemas::Product> {
     services::insert(pool.as_ref(), &payload)
         .await
-        .map(Into::<schemas::DataOne>::into)
+        .map(Into::<schemas::Product>::into)
 }
 
 async fn get_by_id(
     axum::Extension(pool): axum::Extension<Arc<PgPool>>,
     Path(id): Path<uuid::Uuid>,
-) -> Result<schemas::DataOne> {
+) -> Result<schemas::Product> {
     services::get_by_id(pool.as_ref(), id)
         .await
-        .map(Into::<schemas::DataOne>::into)
+        .map(Into::<schemas::Product>::into)
 }
 
-async fn get_all(axum::Extension(pool): axum::Extension<Arc<PgPool>>) -> Result<schemas::DataMany> {
+async fn get_all(axum::Extension(pool): axum::Extension<Arc<PgPool>>) -> Result<schemas::Products> {
     services::get_all(pool.as_ref())
         .await
-        .map(Into::<schemas::DataMany>::into)
+        .map(Into::<schemas::Products>::into)
 }
 
 async fn update(
     axum::Extension(pool): axum::Extension<Arc<PgPool>>,
     Path(id): Path<uuid::Uuid>,
     axum::Json(payload): axum::Json<schemas::UpdateVehicle>,
-) -> Result<schemas::DataOne> {
+) -> Result<schemas::Product> {
     services::update(pool.as_ref(), id, &payload)
         .await
-        .map(Into::<schemas::DataOne>::into)
+        .map(Into::<schemas::Product>::into)
 }
 
 async fn delete_by_id(
