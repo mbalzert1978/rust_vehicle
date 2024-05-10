@@ -42,7 +42,7 @@ async fn main() -> Result<()> {
         .layer(TimeoutLayer::new(std::time::Duration::from_secs(
             constants::TIMEOUT_SECONDS,
         )))
-        .layer(TraceLayer::new_for_http().make_span_with(span::CidSpan::new()));
+        .layer(TraceLayer::new_for_http().make_span_with(span::CidSpan));
 
     let listener =
         tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port)).await?;
