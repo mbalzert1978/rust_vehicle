@@ -15,7 +15,7 @@ tower-http = { version = "0.5.2", features = ["trace", "timeout"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["json"] }
 envconfig = "0.10.0"
-sqlx = { version = "0.7.4", features = ["runtime-tokio-rustls", "postgres", "macros", "uuid", "time"] }
+sqlx = { version = "0.7.4", features = ["runtime-tokio-rustls", "postgres", "uuid", "migrate"] }
 url = "2.5.0"
 validator = { version = "0.18.1", features = ["derive"] }
 uuid = { version = "1.8.0", features = ["v7", "serde"] }
