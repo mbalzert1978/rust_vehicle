@@ -39,7 +39,9 @@ async fn main() -> Result<()> {
         .nest(constants::Prefix::get(), routes)
         .fallback(fallback::fallback)
         .layer(ctx)
-        .layer(TimeoutLayer::new(std::time::Duration::from_secs(5)))
+        .layer(TimeoutLayer::new(std::time::Duration::from_secs(
+            constants::TIMEOUT_SECONDS,
+        )))
         .layer(TraceLayer::new_for_http().make_span_with(span::CidSpan::new()));
 
     let listener =
