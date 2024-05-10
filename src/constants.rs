@@ -1,4 +1,4 @@
-pub(crate) const STARTING: &str = "Starting Application...";
+pub(crate) const STARTUP: &str = "Starting Application...";
 pub(crate) const TIMEOUT_SECONDS: u64 = 5;
 
 pub(crate) struct Prefix;

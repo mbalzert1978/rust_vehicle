@@ -24,7 +24,7 @@ async fn main() -> Result<()> {
     let file = io::create_or_open_file(&config.file_name, directory)?;
 
     logging::init_tracing(file)?;
-    tracing::info!("{}", constants::STARTING);
+    tracing::info!("{}", constants::STARTUP);
 
     let pool = db::get_pool(config.clone()).await?;
 
