@@ -5,7 +5,9 @@ pub async fn fallback(
     axum::Extension(cid): axum::Extension<uuid::Uuid>,
 ) -> impl axum::response::IntoResponse {
     tracing::warn!("Fallback reached::Headers::{:?}", headers);
-    Error::not_found(cid)
+    Error::NotFound {
+        detail: cid.to_string(),
+    }
 }
 
 #[cfg(test)]

@@ -9,18 +9,18 @@ use serde::Serialize;
 #[serde(tag = "type", content = "data")]
 pub enum Error {
     // Setup
-    Generic { detail: String },
+    Config { detail: String },
+    MultiPurposeUrl { detail: String },
+    Schema { detail: String },
+    Logging { detail: String },
 
     // IO
     IO { detail: String },
-
-    // Runtime
-    RunTime { detail: String },
+    Pool { detail: String },
 
     // HTTP Errors
-    NotAllowed { detail: String },
     NotFound { detail: String },
-    BadRequest { detail: String },
+    InternalServer,
 }
 
 impl core::fmt::Display for Error {
@@ -29,35 +29,59 @@ impl core::fmt::Display for Error {
     }
 }
 
-impl Error {
-    pub fn not_found<E: ToString>(error: E) -> Self {
-        Error::NotFound {
-            detail: error.to_string(),
+impl From<tracing::subscriber::SetGlobalDefaultError> for Error {
+    fn from(value: tracing::subscriber::SetGlobalDefaultError) -> Self {
+        Error::Logging {
+            detail: value.to_string(),
         }
     }
-    pub fn bad_request<E: ToString>(error: E) -> Self {
-        Error::BadRequest {
-            detail: error.to_string(),
+}
+
+impl From<validator::ValidationErrors> for Error {
+    fn from(value: validator::ValidationErrors) -> Self {
+        Error::Config {
+            detail: value.to_string(),
         }
     }
-    pub fn not_allowed<E: ToString>(error: E) -> Self {
-        Error::NotAllowed {
-            detail: error.to_string(),
+}
+
+impl From<envconfig::Error> for Error {
+    fn from(value: envconfig::Error) -> Self {
+        Error::Config {
+            detail: value.to_string(),
         }
     }
-    pub fn generic<E: ToString>(error: E) -> Self {
-        Error::Generic {
-            detail: error.to_string(),
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(value: sqlx::Error) -> Self {
+        match value {
+            sqlx::Error::PoolClosed => Error::Pool {
+                detail: value.to_string(),
+            },
+            sqlx::Error::PoolTimedOut => Error::Pool {
+                detail: value.to_string(),
+            },
+            sqlx::Error::RowNotFound => Error::NotFound {
+                detail: "Vehicle with the specified ID was not found.".to_string(),
+            },
+            _ => Error::InternalServer,
         }
     }
-    pub fn io<E: ToString>(error: E) -> Self {
+}
+
+impl From<std::io::Error> for Error {
+    fn from(value: std::io::Error) -> Self {
         Error::IO {
-            detail: error.to_string(),
+            detail: value.to_string(),
         }
     }
-    pub fn runtime<E: ToString>(error: E) -> Self {
-        Error::RunTime {
-            detail: error.to_string(),
+}
+
+impl From<url::ParseError> for Error {
+    fn from(value: url::ParseError) -> Self {
+        Error::MultiPurposeUrl {
+            detail: value.to_string(),
         }
     }
 }
@@ -67,9 +91,7 @@ impl std::error::Error for Error {}
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let status = match self {
-            Error::NotAllowed { .. } => StatusCode::METHOD_NOT_ALLOWED,
             Error::NotFound { .. } => StatusCode::NOT_FOUND,
-            Error::BadRequest { .. } => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
 

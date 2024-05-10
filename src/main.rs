@@ -1,4 +1,3 @@
-use axum::middleware::from_fn;
 use tower_http::timeout::TimeoutLayer;
 use tower_http::trace::TraceLayer;
 
@@ -12,8 +11,8 @@ mod fallback;
 mod health;
 mod io;
 mod logging;
-mod middleware;
 mod prelude;
+mod span;
 mod utils;
 mod vehicles;
 
@@ -40,19 +39,16 @@ async fn main() -> Result<()> {
         .nest(constants::Prefix::get(), routes)
         .fallback(fallback::fallback)
         .layer(ctx)
-        .layer(TimeoutLayer::new(std::time::Duration::from_secs(5)))
-        .layer(TraceLayer::new_for_http())
-        .layer(from_fn(middleware::inject_cid));
+        .layer(TimeoutLayer::new(std::time::Duration::from_secs(
+            constants::TIMEOUT_SECONDS,
+        )))
+        .layer(TraceLayer::new_for_http().make_span_with(span::CidSpan::new()));
 
-    let listener = tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port))
-        .await
-        .map_err(Error::generic)?;
+    let listener =
+        tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port)).await?;
 
-    tracing::info!(
-        "listening on {}",
-        listener.local_addr().map_err(Error::generic)?
-    );
+    tracing::info!("listening on {}", listener.local_addr()?);
 
-    axum::serve(listener, app).await.map_err(Error::generic)?;
+    axum::serve(listener, app).await?;
     Ok(())
 }
