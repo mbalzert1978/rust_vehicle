@@ -43,13 +43,13 @@ pub(crate) async fn insert(
     )
     .fetch_one(ctx.db.as_ref())
     .await
-    .map_err(Error::generic)
+    .map_err(Into::<Error>::into)
 }
 
 pub(crate) async fn get_by_id(
     ctx: crate::ctx::ApiContext,
     id: uuid::Uuid,
-) -> Result<Option<schemas::Vehicle>> {
+) -> Result<schemas::Vehicle> {
     sqlx::query_as!(
         schemas::Vehicle,
         "
@@ -67,9 +67,9 @@ pub(crate) async fn get_by_id(
         ",
         id
     )
-    .fetch_optional(ctx.db.as_ref())
+    .fetch_one(ctx.db.as_ref())
     .await
-    .map_err(Error::generic)
+    .map_err(Into::<Error>::into)
 }
 
 pub(crate) async fn get_all(ctx: crate::ctx::ApiContext) -> Result<Vec<schemas::Vehicle>> {
@@ -92,7 +92,7 @@ pub(crate) async fn get_all(ctx: crate::ctx::ApiContext) -> Result<Vec<schemas::
     )
     .fetch_all(ctx.db.as_ref())
     .await
-    .map_err(Error::generic)
+    .map_err(Into::<Error>::into)
 }
 
 pub(crate) async fn update(
@@ -130,7 +130,7 @@ pub(crate) async fn update(
     )
     .fetch_one(ctx.db.as_ref())
     .await
-    .map_err(Error::generic)
+    .map_err(Into::<Error>::into)
 }
 
 pub(crate) async fn delete_by_id(ctx: crate::ctx::ApiContext, id: uuid::Uuid) -> Result<()> {
@@ -143,8 +143,8 @@ pub(crate) async fn delete_by_id(ctx: crate::ctx::ApiContext, id: uuid::Uuid) ->
         ",
         id
     )
-    .execute(ctx.db.as_ref())
+    .fetch_one(ctx.db.as_ref())
     .await
-    .map_err(Error::generic)?;
+    .map_err(Into::<Error>::into)?;
     Ok(())
 }
