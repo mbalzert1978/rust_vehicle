@@ -87,8 +87,8 @@ mod tests {
         }
     }
 
-    #[test]
-    fn when_creating_vehicle_instance_should_return_valid_instance() {
+    #[tokio::test]
+    async fn when_creating_vehicle_instance_should_return_valid_instance() {
         let vehicle = Vehicle {
             id: uuid::Uuid::now_v7(),
             name: "Test Vehicle".to_string(),
@@ -104,8 +104,8 @@ mod tests {
         assert!(vehicle.is_driveable);
     }
 
-    #[test]
-    fn when_calling_into_on_vehicle_instance_should_return_valid_data_one_instance() {
+    #[tokio::test]
+    async fn when_calling_into_on_vehicle_instance_should_return_valid_data_one_instance() {
         let test_vehicle = get_test_vehicle();
         let expected = DataOne {
             data: Some(test_vehicle.clone()),
@@ -114,8 +114,8 @@ mod tests {
         assert_eq!(result, expected);
     }
 
-    #[test]
-    fn when_calling_into_on_vehicles_vector_should_return_valid_data_many_instance() {
+    #[tokio::test]
+    async fn when_calling_into_on_vehicles_vector_should_return_valid_data_many_instance() {
         let vehicles = vec![
             Vehicle {
                 id: uuid::Uuid::now_v7(),
@@ -139,15 +139,15 @@ mod tests {
         assert_eq!(vehicles.data.len(), 2);
     }
 
-    #[test]
-    fn when_into_response_is_called_on_data_one_instance_should_return_valid_response() {
+    #[tokio::test]
+    async fn when_into_response_is_called_on_data_one_instance_should_return_valid_response() {
         let data_one: DataOne = get_test_vehicle().into();
         let response = data_one.into_response();
         assert_eq!(response.status(), StatusCode::OK);
     }
 
-    #[test]
-    fn when_into_response_is_called_on_data_many_instance_should_return_valid_response() {
+    #[tokio::test]
+    async fn when_into_response_is_called_on_data_many_instance_should_return_valid_response() {
         let vehicles = vec![
             Vehicle {
                 id: uuid::Uuid::now_v7(),
