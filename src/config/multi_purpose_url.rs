@@ -27,12 +27,11 @@ impl FromStr for PostgresDsn {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
-        let url = Url::parse(s).map_err(Error::generic)?;
+        let url = Url::parse(s)?;
         if !["postgres", "postgresql"].contains(&url.scheme()) {
-            return Err(Error::generic(format!(
-                "invalid scheme dsn: [{}]",
-                url.scheme()
-            )));
+            return Err(Error::Schema {
+                detail: format!("invalid scheme dsn: [{}]", url.scheme()),
+            });
         }
         Ok(PostgresDsn(url))
     }
@@ -47,7 +46,9 @@ mod tests {
         let dsn = PostgresDsn::from_str("http://user:pass@localhost:5432/foobar");
         assert_eq!(
             dsn,
-            Err(Error::generic("invalid scheme dsn: [http]".to_string()))
+            Err(Error::Schema {
+                detail: "invalid scheme dsn: [http]".to_string()
+            })
         );
     }
 
