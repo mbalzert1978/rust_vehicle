@@ -1,6 +1,7 @@
 use super::*;
 
 #[derive(serde::Deserialize)]
+#[cfg_attr(test, derive(PartialEq, Eq, Debug))]
 pub(crate) struct CreateVehicle {
     pub(crate) name: String,
     pub(crate) manufacturer: Option<String>,
@@ -9,6 +10,7 @@ pub(crate) struct CreateVehicle {
     pub(crate) body: serde_json::Value,
 }
 #[derive(serde::Deserialize)]
+#[cfg_attr(test, derive(PartialEq, Eq, Debug))]
 pub(crate) struct UpdateVehicle {
     pub(crate) name: Option<String>,
     pub(crate) manufacturer: Option<String>,
@@ -18,6 +20,7 @@ pub(crate) struct UpdateVehicle {
 }
 
 #[derive(serde::Serialize, Clone)]
+#[cfg_attr(test, derive(serde::Deserialize, PartialEq, Eq, Debug))]
 pub(crate) struct Vehicle {
     pub(crate) id: uuid::Uuid,
     pub(crate) name: String,
