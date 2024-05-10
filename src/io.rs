@@ -35,6 +35,7 @@ mod tests {
 
         let result = create_directory(path.to_str().unwrap());
 
+        assert!(result.is_ok(), "FAIL: Could not create directory.");
         assert_eq!(path, result.unwrap());
     }
 
@@ -44,6 +45,7 @@ mod tests {
 
         let result = create_directory(invalid_path);
 
+        assert!(result.is_err(), "FAIL: Invalid path should generate err.");
         assert_eq!(
             result.unwrap_err(),
             Error::IO {
@@ -64,8 +66,11 @@ mod tests {
 
         let result = create_or_open_file(file_name, directory);
 
-        assert!(result.is_ok());
-        assert!(result.unwrap().metadata().is_ok());
+        assert!(result.is_ok(), "FAIL: Could not create or open file.");
+        assert!(
+            result.unwrap().metadata().is_ok(),
+            "FAIL: Could not get file metadata."
+        );
     }
 
     #[tokio::test]
@@ -82,8 +87,11 @@ mod tests {
 
         let result = create_or_open_file(file_name, directory);
 
-        assert!(result.is_ok());
-        assert!(result.unwrap().metadata().is_ok());
+        assert!(result.is_ok(), "FAIL: Could not create or open file.");
+        assert!(
+            result.unwrap().metadata().is_ok(),
+            "FAIL: Could not get file metadata."
+        );
     }
 
     #[tokio::test]
@@ -93,7 +101,7 @@ mod tests {
 
         let result = create_or_open_file(file_name, directory);
 
-        assert!(result.is_err());
+        assert!(result.is_err(), "FAIL: Invalid path should generate err.");
         assert_eq!(
             result.unwrap_err(),
             Error::IO {

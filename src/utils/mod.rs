@@ -8,6 +8,9 @@ mod tests {
 
     #[tokio::test]
     async fn create_correlation_id_when_called_should_return_a_uuid() {
-        assert!(uuid::Uuid::parse_str(&create_correlation_id().to_string()).is_ok());
+        assert!(
+            uuid::Uuid::parse_str(&create_correlation_id().to_string()).is_ok(),
+            "FAIL: Could not parse uuid."
+        );
     }
 }

@@ -214,7 +214,10 @@ mod tests {
         let result = get_all(&pool).await;
 
         assert!(result.is_ok(), "FAIL: Could not get all vehicles.");
-        assert!(result.unwrap().contains(&expected));
+        assert!(
+            result.unwrap().contains(&expected),
+            "FAIL: Expected vehicle not in result."
+        );
     }
 
     #[sqlx::test()]

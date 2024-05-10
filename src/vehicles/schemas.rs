@@ -77,15 +77,14 @@ mod tests {
     use serde_json::json;
 
     fn get_test_vehicle() -> Vehicle {
-        let vehicle = Vehicle {
+        Vehicle {
             id: uuid::Uuid::now_v7(),
             name: "Test Vehicle".to_string(),
             manufacturer: None,
             manufacturing_year: None,
             is_driveable: false,
             body: json!({}),
-        };
-        vehicle
+        }
     }
 
     #[test]
