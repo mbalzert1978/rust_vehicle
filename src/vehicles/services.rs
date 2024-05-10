@@ -158,10 +158,11 @@ mod tests {
                 "foo" : ["bar", "baz"]
             }),
         };
-        let result = insert(&pool, &to_create)
-            .await
-            .expect("FAIL: Could not insert vehicle.");
-        result
+        let result = insert(&pool, &to_create).await;
+
+        assert!(result.is_ok(), "FAIL: Could not insert vehicle.");
+
+        result.unwrap()
     }
 
     #[sqlx::test()]
