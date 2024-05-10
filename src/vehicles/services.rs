@@ -13,6 +13,7 @@ pub(crate) async fn insert(
         INSERT INTO
             vehicles 
         (
+            id,
             name,
             manufacturer,
             manufacturing_year,
@@ -25,7 +26,8 @@ pub(crate) async fn insert(
             $2,
             $3,
             $4,
-            $5
+            $5,
+            $6
         ) 
         RETURNING
         id,
@@ -35,6 +37,7 @@ pub(crate) async fn insert(
         is_driveable,
         body;
         ",
+        uuid::Uuid::now_v7(),
         payload.name,
         payload.manufacturer,
         payload.manufacturing_year,
@@ -83,6 +86,8 @@ pub(crate) async fn get_all(pool: &sqlx::Pool<sqlx::Postgres>) -> Result<Vec<sch
             body
         FROM
             vehicles
+        ORDER BY
+            id ASC
         LIMIT 
             $1;
         ",
