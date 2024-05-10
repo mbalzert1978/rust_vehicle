@@ -4,8 +4,9 @@ use url::Url;
 
 use crate::prelude::*;
 
-#[derive(Clone, PartialEq, Eq, Debug)]
-pub struct PostgresDsn(Url);
+#[derive(Clone)]
+#[cfg_attr(test, derive(PartialEq, Debug))]
+pub(crate) struct PostgresDsn(Url);
 
 use std::ops::{Deref, DerefMut};
 
@@ -28,13 +29,17 @@ impl FromStr for PostgresDsn {
 
     fn from_str(s: &str) -> Result<Self> {
         let url = Url::parse(s)?;
-        if !["postgres", "postgresql"].contains(&url.scheme()) {
-            return Err(Error::Schema {
-                detail: format!("invalid scheme dsn: [{}]", url.scheme()),
-            });
+        if is_postgres_scheme(&url) {
+            return Ok(PostgresDsn(url));
         }
-        Ok(PostgresDsn(url))
+        Err(Error::Schema {
+            detail: format!("Invalid dsn scheme: [{}]", url.scheme()),
+        })
     }
+}
+
+fn is_postgres_scheme(url: &Url) -> bool {
+    ["postgres", "postgresql"].contains(&url.scheme())
 }
 
 #[cfg(test)]
@@ -62,5 +67,51 @@ mod tests {
         assert_eq!(dsn.host_str(), Some("localhost"));
         assert_eq!(dsn.port(), Some(5432));
         assert_eq!(dsn.password(), Some("pass"));
+    }
+
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_with_lowercase_should_return_true() {
+        let url = Url::parse("postgres://localhost").unwrap();
+        assert!(is_postgres_scheme(&url), "FAIL: should return true.");
+    }
+
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_with_uppercase_should_return_true() {
+        let url = Url::parse("POSTGRES://localhost").unwrap();
+        assert!(is_postgres_scheme(&url), "FAIL: should return true.");
+    }
+
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_with_mixedcase_should_return_true() {
+        let url = Url::parse("Postgres://localhost").unwrap();
+        assert!(is_postgres_scheme(&url), "FAIL: should return true.");
+    }
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_with_invalid_scheme_should_return_false() {
+        let url = Url::parse("foo://localhost").unwrap();
+        assert!(!is_postgres_scheme(&url), "FAIL: should return false.");
+    }
+
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_postgresql_with_lowercase_should_return_true() {
+        let url = Url::parse("postgresql://localhost").unwrap();
+        assert!(is_postgres_scheme(&url), "FAIL: should return true.");
+    }
+
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_postgresql_with_uppercase_should_return_true() {
+        let url = Url::parse("POSTGRESQL://localhost").unwrap();
+        assert!(is_postgres_scheme(&url), "FAIL: should return true.");
+    }
+
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_postgresql_with_mixedcase_should_return_true() {
+        let url = Url::parse("PostgresQl://localhost").unwrap();
+        assert!(is_postgres_scheme(&url), "FAIL: should return true.");
+    }
+    #[tokio::test]
+    async fn is_postgres_scheme_when_called_postgresql_with_invalid_scheme_should_return_false() {
+        let url = Url::parse("foo://localhost").unwrap();
+        assert!(!is_postgres_scheme(&url), "FAIL: should return false.");
     }
 }
