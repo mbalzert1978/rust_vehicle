@@ -1,10 +1,10 @@
-use crate::prelude::*;
+use crate::{prelude::*, strings};
 
 pub(crate) async fn fallback(
     headers: axum::http::HeaderMap,
     axum::Extension(cid): axum::Extension<uuid::Uuid>,
 ) -> impl axum::response::IntoResponse {
-    tracing::warn!("Fallback reached::Headers::{:?}", headers);
+    tracing::warn!("{}{:?}", strings::en::FALLBACK, headers);
     Error::NotFound {
         detail: cid.to_string(),
     }

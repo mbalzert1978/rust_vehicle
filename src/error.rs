@@ -1,4 +1,4 @@
-use crate::utils::serializer;
+use crate::{strings, utils::serializer};
 use axum::{
     body::Body,
     http::{Response, StatusCode},
@@ -68,7 +68,7 @@ impl From<sqlx::Error> for Error {
                 detail: value.to_string(),
             },
             sqlx::Error::RowNotFound => Error::NotFound {
-                detail: "Vehicle with the specified ID was not found.".to_string(),
+                detail: strings::en::VEHICLE_ROW_NOT_FOUND.to_string(),
             },
             _ => Error::InternalServer,
         }

@@ -1,5 +1,3 @@
-pub(crate) const STARTUP: &str = "Starting Application...";
-pub(crate) const ACCEPTING: &str = "Accepting connections on: ";
 pub(crate) const TIMEOUT_SECONDS: u64 = 5;
 
 pub(crate) struct Prefix;

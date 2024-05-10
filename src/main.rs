@@ -13,6 +13,7 @@ mod io;
 mod logging;
 mod prelude;
 mod span;
+mod strings;
 mod utils;
 mod vehicles;
 
@@ -24,7 +25,7 @@ async fn main() -> Result<()> {
     let file = io::create_or_open_file(&config.file_name, directory)?;
 
     logging::init_tracing(file)?;
-    tracing::info!("{}", constants::STARTUP);
+    tracing::info!("{}", strings::en::STARTUP);
 
     let pool = db::get_pool(config.clone()).await?;
 
@@ -47,7 +48,7 @@ async fn main() -> Result<()> {
     let listener =
         tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port)).await?;
 
-    tracing::info!("{}{}", constants::ACCEPTING, listener.local_addr()?);
+    tracing::info!("{}{}", strings::en::ACCEPTING, listener.local_addr()?);
 
     axum::serve(listener, app).await?;
     Ok(())

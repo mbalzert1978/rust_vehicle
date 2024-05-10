@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use url::Url;
 
-use crate::prelude::*;
+use crate::{prelude::*, strings};
 
 #[derive(Clone)]
 #[cfg_attr(test, derive(PartialEq, Debug))]
@@ -33,7 +33,7 @@ impl FromStr for PostgresDsn {
             return Ok(PostgresDsn(url));
         }
         Err(Error::Schema {
-            detail: format!("Invalid dsn scheme: [{}]", url.scheme()),
+            detail: format!("{}[{}]", strings::en::INVALID_DSN_SCHEME, url.scheme()),
         })
     }
 }

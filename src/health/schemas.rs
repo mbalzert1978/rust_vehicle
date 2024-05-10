@@ -2,7 +2,7 @@ use axum::{http::StatusCode, response::IntoResponse};
 use serde::Serialize;
 use sqlx::postgres::PgQueryResult;
 
-use crate::utils::serializer;
+use crate::{strings, utils::serializer};
 
 #[derive(Serialize)]
 #[serde(tag = "type")]
@@ -13,13 +13,13 @@ pub(crate) struct DatabaseStatus {
 impl DatabaseStatus {
     pub(crate) fn ok() -> Self {
         Self {
-            status: String::from("OK"),
+            status: strings::en::STATUS_OK.to_string(),
         }
     }
 
     pub(crate) fn error() -> Self {
         Self {
-            status: String::from("ERROR"),
+            status: strings::en::STATUS_ERROR.to_string(),
         }
     }
 }
