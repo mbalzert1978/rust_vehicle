@@ -177,31 +177,13 @@ mod tests {
                 "foo" : ["bar", "baz"]
             }),
         };
-        let result = insert(&pool, &to_create)
-            .await
-            .expect("FAIL: Could not insert vehicle.");
+        let result = insert(&pool, &to_create).await;
+        assert!(result.is_ok(), "FAIL: Could not insert vehicle.");
 
-        let found = sqlx::query_as!(
-            schemas::Vehicle,
-            "
-            SELECT
-                id,
-                name,
-                manufacturer,
-                manufacturing_year,
-                is_driveable,
-                body
-            FROM
-                vehicles
-            WHERE
-                id = $1;
-            ",
-            result.id,
-        )
-        .fetch_one(&pool)
-        .await
-        .expect("FAIL: Vehicle not found.");
+        let found = get_by_id(&pool, result.unwrap().id).await;
+        assert!(found.is_ok(), "FAIL: Could not get vehicle by id.");
 
+        let found = found.unwrap();
         assert_eq!(to_create.name, found.name);
         assert_eq!(to_create.manufacturer, found.manufacturer);
         assert_eq!(to_create.manufacturing_year, found.manufacturing_year);
@@ -214,21 +196,19 @@ mod tests {
         pool: sqlx::PgPool,
     ) {
         let expected = get_test_vehicle(&pool).await;
-        let result = get_by_id(&pool, expected.id)
-            .await
-            .expect("FAIL: Could not get vehicle.");
+        let result = get_by_id(&pool, expected.id).await;
 
-        assert_eq!(expected, result);
+        assert!(result.is_ok(), "FAIL: Could not get vehicle by id.");
+        assert_eq!(expected, result.unwrap());
     }
 
     #[sqlx::test()]
     async fn get_all_vehicles_when_called_should_return_all_vehicles(pool: sqlx::PgPool) {
         let expected = get_test_vehicle(&pool).await;
-        let result = get_all(&pool)
-            .await
-            .expect("FAIL: Could not get all vehicles.");
+        let result = get_all(&pool).await;
 
-        assert!(result.contains(&expected));
+        assert!(result.is_ok(), "FAIL: Could not get all vehicles.");
+        assert!(result.unwrap().contains(&expected));
     }
 
     #[sqlx::test()]
@@ -245,9 +225,11 @@ mod tests {
                 "baz":["foo"]
             })),
         };
-        let result = update(&pool, to_update.id, &new_values)
-            .await
-            .expect("FAIL: Could not update vehicle.");
+        let result = update(&pool, to_update.id, &new_values).await;
+
+        assert!(result.is_ok(), "FAIL: Could not update vehicle.");
+
+        let result = result.unwrap();
 
         assert_eq!(to_update.manufacturer, result.manufacturer);
         assert_eq!(to_update.manufacturing_year, result.manufacturing_year);
@@ -262,16 +244,17 @@ mod tests {
     ) {
         let to_delete = get_test_vehicle(&pool).await;
 
-        delete_by_id(&pool, to_delete.id)
-            .await
-            .expect("FAIL: Could not delete vehicle.");
+        assert!(
+            delete_by_id(&pool, to_delete.id).await.is_ok(),
+            "FAIL: Could not delete vehicle."
+        );
 
-        let result = get_by_id(&pool, to_delete.id)
-            .await
-            .expect_err("FAIL: Vehicle should not exist.");
+        let result = get_by_id(&pool, to_delete.id).await;
+
+        assert!(result.is_err(), "FAIL: Vehicle should not exist.");
 
         assert_eq!(
-            result,
+            result.unwrap_err(),
             Error::NotFound {
                 detail: "Vehicle with the specified ID was not found.".to_string()
             }
