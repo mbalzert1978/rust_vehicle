@@ -17,8 +17,7 @@ pub async fn get_ctx(
     let pool = sqlx::postgres::PgPoolOptions::new()
         .max_connections(cfg.max_pool_size)
         .connect(cfg.database_url.as_str())
-        .await
-        .map_err(Error::generic)?;
+        .await?;
 
     let pool = std::sync::Arc::new(pool);
 
