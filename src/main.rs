@@ -44,15 +44,11 @@ async fn main() -> Result<()> {
         .layer(TraceLayer::new_for_http())
         .layer(from_fn(middleware::inject_cid));
 
-    let listener = tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port))
-        .await
-        .map_err(Error::generic)?;
+    let listener =
+        tokio::net::TcpListener::bind(format!("{}:{}", &config.host, &config.port)).await?;
 
-    tracing::info!(
-        "listening on {}",
-        listener.local_addr().map_err(Error::generic)?
-    );
+    tracing::info!("listening on {}", listener.local_addr()?);
 
-    axum::serve(listener, app).await.map_err(Error::generic)?;
+    axum::serve(listener, app).await?;
     Ok(())
 }
