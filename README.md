@@ -1,20 +1,41 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+# vehicle_api
 
-CREATE TABLE vehicles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
-    manufacturer TEXT,
-    manufacturing_year INTEGER,
-    is_driveable BOOLEAN NOT NULL DEFAULT false,
-    body JSONB,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+create a .env file like this:
 
-CREATE OR REPLACE FUNCTION update_modified_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now();
-RETURN NEW;
-END;
-$$ language 'plpgsql';
+```.env
+DATABASE_URL=postgres://app:app@app_db:5432/app
+```
 
-CREATE TRIGGER update_vehicles_modtime BEFORE
-UPDATE ON vehicles FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+Create a database and generate a database URL to access the database.
+Install the SQLx command line interface (CLI):
+
+```bash
+cargo install sqlx-cli
+```
+
+Then run :
+
+```bash
+sqlx migrate run
+```
+
+## Webanwendung:
+
+- Quellcode in einem zugänglichen Git-Repo (entweder öffentlich zugänglich oder mit spezieller Einladung)
+- vorzugsweise nicht nur ein einziger Commit, sondern mit etwas Historie, um eine Vorstellung davon zu bekommen, wie Sie diese Herausforderung angegangen sind
+- FastAPI Webanwendung (json API)
+- PostgreSQL-Datenbank für die Speicherung der Daten
+- wir würden gerne vier Endpunkte sehen: - einen Status-Endpunkt zur Überprüfung des Dienstzustandes - einen Endpunkt für das Hinzufügen eines Datensatzes zur Datenbank - ein Endpunkt zum Abrufen aller Datensätze aus der Datenbank (keine Paginierung erforderlich) - der letzte Endpunkt wäre für die Aktualisierung eines bestehenden Datensatzes
+- Unser Vorschlag für die zu speichernden Daten wäre:
+  "vehicle"-Datensätze mit einigen verschiedenen Datentypen. z.B.:
+  "name" (Freitext)
+  "metadata" (JSON-Daten)
+  "year_of_manufacture" (Ganzzahl)
+  "ready_to_drive" (Boolean)
+- eine swagger-ui, die möglichst aussagekräftig ist (Auskunft über erwartete Eingabeparameter und zu erwartende Responses, Beispiele, Defaults).
+
+Optional, aber nicht zwingend erforderlich:
+
+- eine Möglichkeit eine Teilmenge von Datensätzen abzurufen (z.B. eine einfache Art Suche oder Filterung)
+
+### NICHT ERFORDERLICH: HTML, CSS, Authentifizierung/Authorisierug, Deployment, DB-Migrationen, Unittests, Docker-Setup. Für die Datenbank reicht uns das Schema als SQL-Datei.
