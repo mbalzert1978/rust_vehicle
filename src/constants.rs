@@ -1,9 +1,10 @@
-pub const STARTING: &str = "Starting Application...";
+pub(crate) const STARTING: &str = "Starting Application...";
+pub(crate) const TIMEOUT_SECONDS: u64 = 5;
 
-pub struct Prefix;
+pub(crate) struct Prefix;
 
 impl Prefix {
-    pub fn get() -> &'static str {
+    pub(crate) fn get() -> &'static str {
         "/api/v1"
     }
 }
