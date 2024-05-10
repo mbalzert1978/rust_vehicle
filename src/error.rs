@@ -1,8 +1,11 @@
 use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
+    body::Body,
+    http::{Response, StatusCode},
+    response::IntoResponse,
+    Json,
 };
 use serde::Serialize;
+use serde_json::json;
 
 #[derive(Clone, Debug, Serialize)]
 #[cfg_attr(test, derive(PartialEq))]
@@ -17,6 +20,9 @@ pub enum Error {
     // IO
     IO { detail: String },
     Pool { detail: String },
+
+    // Runtime
+    Runtime { detail: String },
 
     // HTTP Errors
     NotFound { detail: String },
@@ -86,16 +92,24 @@ impl From<url::ParseError> for Error {
     }
 }
 
+impl From<axum::http::Error> for Error {
+    fn from(value: axum::http::Error) -> Self {
+        Error::Runtime {
+            detail: value.to_string(),
+        }
+    }
+}
+
 impl std::error::Error for Error {}
 
 impl IntoResponse for Error {
-    fn into_response(self) -> Response {
+    fn into_response(self) -> Response<Body> {
         let status = match self {
             Error::NotFound { .. } => StatusCode::NOT_FOUND,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
-        let body = serde_json::to_string(&self).unwrap_or_default();
+        let body = Json(json!(self));
 
         (status, body).into_response()
     }
