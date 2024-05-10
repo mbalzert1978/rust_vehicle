@@ -10,9 +10,9 @@ pub fn routes() -> axum::Router {
     axum::Router::new()
         .route("/", get(get_all))
         .route("/", post(insert))
-        .route("/{id}", get(get_by_id))
-        .route("/{id}", put(update))
-        .route("/{id}", delete(delete_by_id))
+        .route("/:id", get(get_by_id))
+        .route("/:id", put(update))
+        .route("/:id", delete(delete_by_id))
 }
 
 async fn insert(
