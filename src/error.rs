@@ -63,7 +63,7 @@ impl From<sqlx::Error> for Error {
                 detail: value.to_string(),
             },
             sqlx::Error::RowNotFound => Error::NotFound {
-                detail: value.to_string(),
+                detail: "Vehicle with the specified ID was not found.".to_string(),
             },
             _ => Error::InternalServer,
         }
