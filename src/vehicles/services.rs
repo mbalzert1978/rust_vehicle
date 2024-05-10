@@ -7,7 +7,7 @@ pub(crate) async fn insert(
     ctx: crate::ctx::ApiContext,
     payload: schemas::CreateVehicle,
 ) -> Result<schemas::Vehicle> {
-    sqlx::query_as!(
+    Ok(sqlx::query_as!(
         schemas::Vehicle,
         "
         INSERT INTO
@@ -42,15 +42,14 @@ pub(crate) async fn insert(
         payload.body
     )
     .fetch_one(ctx.db.as_ref())
-    .await
-    .map_err(Into::<Error>::into)
+    .await?)
 }
 
 pub(crate) async fn get_by_id(
     ctx: crate::ctx::ApiContext,
     id: uuid::Uuid,
 ) -> Result<schemas::Vehicle> {
-    sqlx::query_as!(
+    Ok(sqlx::query_as!(
         schemas::Vehicle,
         "
         SELECT
@@ -68,12 +67,11 @@ pub(crate) async fn get_by_id(
         id
     )
     .fetch_one(ctx.db.as_ref())
-    .await
-    .map_err(Into::<Error>::into)
+    .await?)
 }
 
 pub(crate) async fn get_all(ctx: crate::ctx::ApiContext) -> Result<Vec<schemas::Vehicle>> {
-    sqlx::query_as!(
+    Ok(sqlx::query_as!(
         schemas::Vehicle,
         "
         SELECT
@@ -91,8 +89,7 @@ pub(crate) async fn get_all(ctx: crate::ctx::ApiContext) -> Result<Vec<schemas::
         LIMIT,
     )
     .fetch_all(ctx.db.as_ref())
-    .await
-    .map_err(Into::<Error>::into)
+    .await?)
 }
 
 pub(crate) async fn update(
@@ -100,7 +97,7 @@ pub(crate) async fn update(
     id: uuid::Uuid,
     payload: schemas::UpdateVehicle,
 ) -> Result<schemas::Vehicle> {
-    sqlx::query_as!(
+    Ok(sqlx::query_as!(
         schemas::Vehicle,
         "
         UPDATE
@@ -129,8 +126,7 @@ pub(crate) async fn update(
         payload.body
     )
     .fetch_one(ctx.db.as_ref())
-    .await
-    .map_err(Into::<Error>::into)
+    .await?)
 }
 
 pub(crate) async fn delete_by_id(ctx: crate::ctx::ApiContext, id: uuid::Uuid) -> Result<()> {
@@ -144,7 +140,6 @@ pub(crate) async fn delete_by_id(ctx: crate::ctx::ApiContext, id: uuid::Uuid) ->
         id
     )
     .fetch_one(ctx.db.as_ref())
-    .await
-    .map_err(Into::<Error>::into)?;
+    .await?;
     Ok(())
 }
