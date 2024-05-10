@@ -103,11 +103,11 @@ pub(crate) async fn update(
         UPDATE
             vehicles 
         SET
-            name = $2, 
-            manufacturer = $3, 
-            manufacturing_year = $4, 
-            is_driveable = $5, 
-            body = $6
+            name = COALESCE($2, name), 
+            manufacturer = COALESCE($3, manufacturer), 
+            manufacturing_year = COALESCE($4, manufacturing_year), 
+            is_driveable = COALESCE($5, is_driveable), 
+            body = COALESCE($6, body)
         WHERE
             id = $1
         RETURNING
