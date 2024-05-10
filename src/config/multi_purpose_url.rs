@@ -51,7 +51,7 @@ mod tests {
         let dsn = PostgresDsn::from_str("http://user:pass@localhost:5432/foobar");
         match dsn {
             Err(Error::Schema { .. }) => (),
-            _ => panic!("FAIL: Error should be Schema."),
+            _ => panic!("FAIL: Error type should be Schema."),
         }
     }
 

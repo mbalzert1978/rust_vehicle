@@ -264,7 +264,7 @@ mod tests {
 
         match result {
             Err(Error::NotFound { .. }) => (),
-            _ => panic!("FAIL: Error should be NotFound."),
+            _ => panic!("FAIL: Error type should be NotFound."),
         }
     }
 }
