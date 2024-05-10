@@ -1,6 +1,8 @@
 use super::*;
 use crate::prelude::*;
 
+const LIMIT: i64 = 1000; //TODO: replace with parameter.
+
 pub(crate) async fn insert(
     ctx: crate::ctx::ApiContext,
     payload: schemas::CreateVehicle,
@@ -84,8 +86,9 @@ pub(crate) async fn get_all(ctx: crate::ctx::ApiContext) -> Result<Vec<schemas::
         FROM
             vehicles
         LIMIT 
-            1000;
-        "
+            $1;
+        ",
+        LIMIT,
     )
     .fetch_all(ctx.db.as_ref())
     .await
