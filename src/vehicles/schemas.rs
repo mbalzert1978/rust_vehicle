@@ -30,31 +30,44 @@ pub(crate) struct Vehicle {
 
 impl From<Option<Vehicle>> for DataOne {
     fn from(value: Option<Vehicle>) -> Self {
-        DataOne { data: value }
+        DataOne {
+            result_type: "result".to_string(),
+            data: value,
+        }
     }
 }
 
 impl From<Vehicle> for DataOne {
     fn from(value: Vehicle) -> Self {
-        DataOne { data: Some(value) }
+        DataOne {
+            result_type: "result".to_string(),
+            data: Some(value),
+        }
     }
 }
 
 impl From<Vec<Vehicle>> for DataMany {
     fn from(value: Vec<Vehicle>) -> Self {
-        DataMany { data: value }
+        DataMany {
+            result_type: "result".to_string(),
+            data: value,
+        }
     }
 }
 
 #[derive(serde::Serialize)]
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub(crate) struct DataOne {
+    #[serde(rename = "type")]
+    result_type: String,
     data: Option<Vehicle>,
 }
 
 #[derive(serde::Serialize)]
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub(crate) struct DataMany {
+    #[serde(rename = "type")]
+    result_type: String,
     data: Vec<Vehicle>,
 }
 
@@ -108,6 +121,7 @@ mod tests {
     async fn when_calling_into_on_vehicle_instance_should_return_valid_data_one_instance() {
         let test_vehicle = get_test_vehicle();
         let expected = DataOne {
+            result_type: "result".to_string(),
             data: Some(test_vehicle.clone()),
         };
         let result: DataOne = test_vehicle.into();
