@@ -2,7 +2,7 @@ use super::*;
 use crate::ctx::ApiContext;
 use axum::{routing::get, Extension, Router};
 
-pub fn routes() -> Router {
+pub(crate) fn routes() -> Router {
     Router::new().route("/", get(health_api))
 }
 

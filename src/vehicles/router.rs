@@ -6,7 +6,7 @@ use axum::{
     extract::Path,
     routing::{delete, get, post, put},
 };
-pub fn routes() -> axum::Router {
+pub(crate) fn routes() -> axum::Router {
     axum::Router::new()
         .route("/", get(get_all))
         .route("/", post(insert))

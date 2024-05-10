@@ -1,4 +1,4 @@
-pub fn create_correlation_id() -> uuid::Uuid {
+pub(crate) fn create_correlation_id() -> uuid::Uuid {
     uuid::Uuid::now_v7()
 }
 

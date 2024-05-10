@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-pub fn create_directory(path: &str) -> Result<&std::path::Path> {
+pub(crate) fn create_directory(path: &str) -> Result<&std::path::Path> {
     let directory = std::path::Path::new(path);
 
     if !directory.exists() {
@@ -10,7 +10,10 @@ pub fn create_directory(path: &str) -> Result<&std::path::Path> {
     Ok(directory)
 }
 
-pub fn create_or_open_file(file_name: &str, directory: &std::path::Path) -> Result<std::fs::File> {
+pub(crate) fn create_or_open_file(
+    file_name: &str,
+    directory: &std::path::Path,
+) -> Result<std::fs::File> {
     let path = std::path::Path::new(file_name);
     let file = std::fs::File::options()
         .append(true)

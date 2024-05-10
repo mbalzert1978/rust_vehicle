@@ -52,7 +52,7 @@ mod tests {
         assert_eq!(
             dsn,
             Err(Error::Schema {
-                detail: "invalid scheme dsn: [http]".to_string()
+                detail: "Invalid dsn scheme: [http]".to_string()
             })
         );
     }

@@ -3,10 +3,10 @@ mod schemas;
 mod services;
 mod utils;
 
-pub struct Tag;
+pub(crate) struct Tag;
 
 impl Tag {
-    pub fn get() -> &'static str {
+    pub(crate) fn get() -> &'static str {
         "/vehicles"
     }
 }
