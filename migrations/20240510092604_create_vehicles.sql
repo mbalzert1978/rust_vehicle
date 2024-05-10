@@ -1,5 +1,3 @@
--- Add migration script here
-DROP TABLE IF EXISTS vehicles;
 CREATE TABLE vehicles (
     id UUID PRIMARY KEY NULL NULL,
     name TEXT NOT NULL,
