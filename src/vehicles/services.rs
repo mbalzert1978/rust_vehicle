@@ -139,7 +139,7 @@ pub(crate) async fn delete_by_id(pool: &sqlx::Pool<sqlx::Postgres>, id: uuid::Uu
         ",
         id
     )
-    .fetch_one(pool)
+    .execute(pool)
     .await?;
     Ok(())
 }
@@ -148,22 +148,38 @@ pub(crate) async fn delete_by_id(pool: &sqlx::Pool<sqlx::Postgres>, id: uuid::Uu
 mod tests {
     use super::*;
 
+    async fn get_test_vehicle(pool: &sqlx::Pool<sqlx::Postgres>) -> schemas::Vehicle {
+        let to_create = schemas::CreateVehicle {
+            name: "test_vehicle".to_string(),
+            manufacturer: Some("test_manufacturer".to_string()),
+            manufacturing_year: Some(2021),
+            is_driveable: true,
+            body: serde_json::json!({
+                "foo" : ["bar", "baz"]
+            }),
+        };
+        let result = insert(&pool, &to_create)
+            .await
+            .expect("FAIL: Could not insert vehicle.");
+        result
+    }
+
     #[sqlx::test()]
     async fn insert_vehicle_when_called_with_valid_create_vehicle_should_insert_into_db_and_retun_the_newly_created_vehicle(
         pool: sqlx::PgPool,
     ) {
         let to_create = schemas::CreateVehicle {
             name: "test_vehicle".to_string(),
-            manufacturer: Some("test".to_string()),
+            manufacturer: Some("test_manufacturer".to_string()),
             manufacturing_year: Some(2021),
             is_driveable: true,
             body: serde_json::json!({
-                "test": "test"
+                "foo" : ["bar", "baz"]
             }),
         };
         let result = insert(&pool, &to_create)
             .await
-            .expect("Could not insert vehicle.");
+            .expect("FAIL: Could not insert vehicle.");
 
         let found = sqlx::query_as!(
             schemas::Vehicle,
@@ -184,12 +200,81 @@ mod tests {
         )
         .fetch_one(&pool)
         .await
-        .expect("Vehicle not found.");
+        .expect("FAIL: Vehicle not found.");
 
         assert_eq!(to_create.name, found.name);
         assert_eq!(to_create.manufacturer, found.manufacturer);
         assert_eq!(to_create.manufacturing_year, found.manufacturing_year);
         assert_eq!(to_create.is_driveable, found.is_driveable);
         assert_eq!(to_create.body, found.body);
+    }
+
+    #[sqlx::test()]
+    async fn get_vehicle_by_id_when_called_with_valid_id_should_return_the_vehicle(
+        pool: sqlx::PgPool,
+    ) {
+        let expected = get_test_vehicle(&pool).await;
+        let result = get_by_id(&pool, expected.id)
+            .await
+            .expect("FAIL: Could not get vehicle.");
+
+        assert_eq!(expected, result);
+    }
+
+    #[sqlx::test()]
+    async fn get_all_vehicles_when_called_should_return_all_vehicles(pool: sqlx::PgPool) {
+        let expected = get_test_vehicle(&pool).await;
+        let result = get_all(&pool)
+            .await
+            .expect("FAIL: Could not get all vehicles.");
+
+        assert!(result.contains(&expected));
+    }
+
+    #[sqlx::test()]
+    async fn update_vehicle_by_id_when_called_with_valid_id_should_update_the_vehicle(
+        pool: sqlx::PgPool,
+    ) {
+        let to_update = get_test_vehicle(&pool).await;
+        let new_values = schemas::UpdateVehicle {
+            name: Some("updated_name".to_string()),
+            manufacturer: None,
+            manufacturing_year: None,
+            is_driveable: None,
+            body: Some(serde_json::json!({
+                "baz":["foo"]
+            })),
+        };
+        let result = update(&pool, to_update.id, &new_values)
+            .await
+            .expect("FAIL: Could not update vehicle.");
+
+        assert_eq!(to_update.manufacturer, result.manufacturer);
+        assert_eq!(to_update.manufacturing_year, result.manufacturing_year);
+        assert_eq!(to_update.is_driveable, result.is_driveable);
+        assert_eq!(new_values.name, Some(result.name));
+        assert_eq!(new_values.body, Some(result.body));
+    }
+
+    #[sqlx::test()]
+    async fn delete_vehicle_by_id_when_called_with_valid_id_should_delete_the_vehicle(
+        pool: sqlx::PgPool,
+    ) {
+        let to_delete = get_test_vehicle(&pool).await;
+
+        delete_by_id(&pool, to_delete.id)
+            .await
+            .expect("FAIL: Could not delete vehicle.");
+
+        let result = get_by_id(&pool, to_delete.id)
+            .await
+            .expect_err("FAIL: Vehicle should not exist.");
+
+        assert_eq!(
+            result,
+            Error::NotFound {
+                detail: "Vehicle with the specified ID was not found.".to_string()
+            }
+        );
     }
 }
